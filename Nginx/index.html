@@ -1,33 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แบบบันทึกข้อมูลนักศึกษา</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background-color: #4A90E2;
+        }
+
+        .header h1 {
+            color: white;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .button {
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #dc3545;
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: none;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 p-6">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800">นักศึกษา</h1>
-    <h2 class="text-2xl font-semibold mb-4 text-gray-700">ข้อมูลนักศึกษา</h2>
-    <form id="studentForm" class="bg-white p-6 rounded shadow-md mb-4">
-        <div class="mb-4">
-            <input type="text" id="studentCode" placeholder="รหัสนักศึกษา" required class="border border-gray-300 p-2 rounded w-full">
-        </div>
-        <div class="mb-4">
-            <input type="text" id="firstName" placeholder="ชื่อ" required class="border border-gray-300 p-2 rounded w-full">
-        </div>
-        <div class="mb-4">
-            <input type="text" id="lastName" placeholder="นามสกุล" required class="border border-gray-300 p-2 rounded w-full">
-        </div>
-        <div class="mb-4">
-            <input type="text" id="telNumber" placeholder="เบอร์โทร" required class="border border-gray-300 p-2 rounded w-full">
-        </div>
-        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">เพิ่ม ข้อมูล</button>
-    </form>
 
-    <button id="fetchButton" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 mb-4">ค้นหาข้อมูลปัจจุบัน</button>
+<body class="bg-gray-100">
+    <header class="header p-6">
+        <h1 class="text-4xl font-bold text-center">แบบบันทึกข้อมูลนักศึกษา</h1>
+    </header>
+    <main class="p-6">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-700 text-center">ข้อมูลนักศึกษา</h2>
+        <form id="studentForm" class="card p-6 mb-4">
+            <div class="mb-4">
+                <input type="text" id="studentCode" placeholder="รหัสนักศึกษา" required class="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring focus:ring-blue-300">
+            </div>
+            <div class="mb-4">
+                <input type="text" id="firstName" placeholder="ชื่อ" required class="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring focus:ring-blue-300">
+            </div>
+            <div class="mb-4">
+                <input type="text" id="lastName" placeholder="นามสกุล" required class="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring focus:ring-blue-300">
+            </div>
+            <div class="mb-4">
+                <input type="tel" id="telNumber" placeholder="เบอร์โทร" required class="border border-gray-300 p-3 rounded w-full focus:outline-none focus:ring focus:ring-blue-300">
+            </div>
+            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded w-full button">เพิ่ม ข้อมูล</button>
+        </form>
 
-    <div id="students" class="space-y-4"></div>
+        <button id="fetchButton" class="bg-green-600 text-white py-2 px-4 rounded w-full mb-4 button">ค้นหาข้อมูลปัจจุบัน</button>
+
+        <div id="students" class="space-y-4"></div>
+
+        <div id="toast" class="toast">จับเวลาในการทำงาน!</div>
+    </main>
 
     <script>
         const apiUrl = 'http://localhost:3000/students';
@@ -36,17 +78,17 @@
             try {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
-                
+
                 const studentsDiv = document.getElementById('students');
                 studentsDiv.innerHTML = data.map(student => `
-                    <div class="bg-white p-4 rounded shadow-md" id="student-${student._id}">
-                        <p class="font-semibold"><strong>Student Code:</strong> ${student.studentCode}</p>
-                        <p class="font-semibold"><strong>First Name:</strong> ${student.firstName}</p>
-                        <p class="font-semibold"><strong>Last Name:</strong> ${student.lastName}</p>
-                        <p class="font-semibold"><strong>Tel:</strong> ${student.telNumber}</p>
-                        <div class="mt-2">
+                    <div class="card p-4 mb-4" id="student-${student._id}">
+                        <p class="font-semibold"><strong>รหัสนักศึกษา:</strong> ${student.studentCode}</p>
+                        <p class="font-semibold"><strong>ชื่อ:</strong> ${student.firstName}</p>
+                        <p class="font-semibold"><strong>นามสกุล:</strong> ${student.lastName}</p>
+                        <p class="font-semibold"><strong>เบอร์โทร:</strong> ${student.telNumber}</p>
+                        <div class="mt-2 space-x-2">
                             <button onclick="editStudent('${student._id}')" class="bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600">Edit</button>
-                            <button onclick="deleteStudent('${student._id}')" class="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 ml-2">Delete</button>
+                            <button onclick="deleteStudent('${student._id}')" class="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600">Delete</button>
                         </div>
                     </div>
                 `).join('');
@@ -74,8 +116,7 @@
                 fetchStudents();
                 document.getElementById('studentForm').reset();
             } catch (error) {
-                console.error('Error adding student:', error);
-                alert('Failed to add student: ' + error.message);
+                showToast('Failed to add student: ' + error.message);
             }
         });
 
@@ -117,6 +158,16 @@
         }
 
         document.getElementById('fetchButton').addEventListener('click', fetchStudents);
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
     </script>
 </body>
+
 </html>
